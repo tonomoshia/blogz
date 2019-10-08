@@ -13,11 +13,12 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.Text(5000))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, body):
         self.title = title
         self.body = body
-
+        self.owner = owner
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -51,8 +52,10 @@ def create_new_post():
 
     if request.method == 'POST':
         blog_title = request.form['title']
+        blog_owner = request.form['owner']
         blog_body = request.form['body']
-        new_blog = Blog(blog_title, blog_body)
+
+        new_blog = Blog(blog_title, blog_owner, blog_body)
 
         title_error = ''
 
@@ -69,7 +72,7 @@ def create_new_post():
             return redirect('/blog?id={}'.format(new_blog.id))
         else:
             blogs = Blog.query.all()
-            return render_template('new_post.html', title="Build a Blog", blogs=blogs, blog_title=blog_title, title_error=title_error, blog_body=blog_body, body_error=body_error)
+            return render_template('new_post.html', title="Build a Blog", blogs=blogs, blog_title=blog_title, title_error=title_error, blog_body=blog_body, body_error=body_error, blog_owner=blog_owner)
 
 if __name__ == "__main__":
     app.run()
