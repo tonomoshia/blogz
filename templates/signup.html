@@ -1,0 +1,40 @@
+
+
+{% comment %}
+For /signup page:
+
+    User enters new, valid username, a valid password, and verifies password correctly and is redirected to the '/newpost' page with their username being stored in a session.
+    User leaves any of the username, password, or verify fields blank and gets an error message that one or more fields are invalid.
+    User enters a username that already exists and gets an error message that username already exists.
+    User enters different strings into the password and verify fields and gets an error message that the passwords do not match.
+    User enters a password or username less than 3 characters long and gets either an invalid username or an invalid password message. {% endcomment %}
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create a <em>Blogz</em> account.</h1>
+<form action="/signup" method="post">
+    <table>
+        <tr>
+            <td><label for="username">Username</label></td>
+            <td>
+                <input name="username" type="text" value="{{ username }}">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td>
+                <input name="password" type="password">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="verify">Verify Password</label></td>
+            <td>
+                <input name="verify" type="password">
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Sign Up">
+</form>
+{% endblock %}

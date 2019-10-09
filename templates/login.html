@@ -1,0 +1,32 @@
+{% comment %}
+For /login page:
+
+    User enters a username that is stored in the database with the correct password and is redirected to the /newpost page with their username being stored in a session.
+    User enters a username that is stored in the database with an incorrect password and is redirected to the /login page with a message that their password is incorrect.
+    User tries to login with a username that is not stored in the database and is redirected to the /login page with a message that this username does not exist.
+    User does not have an account and clicks "Create Account" and is directed to the /signup page. {% endcomment %}
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Log in to Blogz!</h1>
+<p>If you don't have an account, you may <a href="/signup">create an account.</a></p>
+<form action="/login" method="post">
+    <table>
+        <tr>
+            <td><label for="username">Username</label></td>
+            <td>
+                <input name="username" type="text" value="{{ username }}">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td>
+                <input name="password" type="password">
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Login">
+</form>
+{% endblock %}
