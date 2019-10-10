@@ -31,10 +31,6 @@ class User(db.Model):
         self.username = username
         self.password = password
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    blogs = Blog.query.all()
-    return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
 @app.before_request
 def require_login():
@@ -48,18 +44,27 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
-        if user and password==password:
+
+        if user and password == password:
             session['username'] = username
             flash('Logged in')
             return redirect('/newpost')
-        if not user:
-            flash('Username does not exist', 'error')
-            return render_template('login.html')
         else:
+            if not user:
+                flash('Username does not exist', 'error')
+                return render_template('login.html')
+        elif password != user.password:
             flash('Password is incorrect.', 'error')
-            return render_template('login.html', username=username)
+            return redirect('login')
 
     return render_template('login.html')
+
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    blogs = Blog.query.all()
+    return render_template('blog.html', title="Build a Blog", blogs=blogs)
+
+
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
