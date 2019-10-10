@@ -8,6 +8,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:88
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+
 class Blog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -36,6 +37,12 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'blog', 'index', 'signup', 'users', 'userpost']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('login')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -115,7 +122,7 @@ def signup():
 def logout():
     del session['username']
     return redirect('blog')
-    
+
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
     if request.args:
