@@ -3,11 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-
+app.secret_key = "jIxfJ7UoLjcGYyCO8mooT&!r"
 
 class Blog(db.Model):
 
@@ -37,7 +36,6 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
-
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'blog', 'index', 'signup', 'users', 'userpost']
@@ -62,7 +60,6 @@ def login():
             return render_template('login.html', username=username)
 
     return render_template('login.html')
-
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -116,7 +113,6 @@ def signup():
             return redirect('signup')
 
     return render_template('signup.html')
-
 
 @app.route('/logout')
 def logout():
