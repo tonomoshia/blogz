@@ -56,6 +56,60 @@ def login():
 
     return render_template('login.html')
 
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        username_error = ''
+        password_error = ''
+        verify_error = ''
+        existing_user_error = ''
+
+        existing_user = User.query.filter_by(username=username).first()
+
+        if int(len(username)) <= 0:
+            username_error = 'Thats not a valid username'
+            username = ''
+        else:
+            if int(len(username)) < 3 or int(len(username)) > 20:
+                username_error = 'Thats not a valid username'
+                username = ''
+
+        if int(len(password)) <= 0:
+            password_error = 'Thats not a valid password'
+            password = ''
+        else:
+            if int(len(password)) < 3 or int(len(password)) > 20:
+                password_error = 'Thats not a valid password'
+                password = ''
+
+        if int(len(verify)) <= 0:
+            verify_error = 'Password do not match'
+            verify = ''
+        else:
+            if password != verify:
+                verify_error = 'Password do not match'
+                verify = ''
+
+        if username_error or password_error or verify_error:
+            return render_template('signup.html', username_error=username_error,password_error=password_error, verify_error=verify_error,username=username, password=password, verify=verify)
+
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            return redirect('newpost')
+        else:
+            flash('A user with that username already exists', 'error')
+            return redirect('signup')
+
+    return render_template('signup.html')
+    
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
     if request.args:
