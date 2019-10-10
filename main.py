@@ -129,6 +129,11 @@ def display_blog():
         blogs = Blog.query.all()
         return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
+
+@app.route('/newpost')
+def display():
+    return render_template('new_post.html')
+
 @app.route('/newpost', methods=['post', 'get'])
 def create_new_post():
     if request.method=='GET':
