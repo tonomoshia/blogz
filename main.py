@@ -36,6 +36,26 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and password==password:
+            session['username'] = username
+            flash('Logged in')
+            return redirect('/newpost')
+        if not user:
+            flash('Username does not exist', 'error')
+            return render_template('login.html')
+        else:
+            flash('Password is incorrect.', 'error')
+            return render_template('login.html', username=username)
+
+    return render_template('login.html')
+
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
     if request.args:
