@@ -28,3 +28,15 @@ p {
 footer {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
+
+a {
+    color: blue;
+}
+
+a:visited {
+    color: hotpink;
+}
+
+a:hover {
+    color: darkgreen;
+}
