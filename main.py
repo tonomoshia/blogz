@@ -53,9 +53,9 @@ def login():
             if not user:
                 flash('Username does not exist', 'error')
                 return render_template('login.html')
-        elif password != user.password:
-            flash('Password is incorrect.', 'error')
-            return redirect('login')
+            elif password != user.password:
+                flash('Password is incorrect.', 'error')
+                return redirect('login')
 
     return render_template('login.html')
 
