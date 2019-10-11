@@ -34,7 +34,9 @@ class User(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'blog', 'index', 'signup', 'users', 'userpost']
+    #not required to login
+    allowed_routes = ['login', 'blog', 'index', 'signup',]
+    #required to login
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('login')
 
@@ -48,7 +50,7 @@ def login():
         if user and password == password:
             session['username'] = username
             flash('Logged in')
-            return redirect('/newpost')
+            return redirect('newpost')
         else:
             if not user:
                 flash('Username does not exist', 'error')
@@ -97,7 +99,7 @@ def signup():
             if password != verify:
                 verify_error = 'Password do not match'
                 verify = ''
-        #all errors passed
+
         if username_error or password_error or verify_error:
             return render_template('signup.html', username_error=username_error,password_error=password_error, verify_error=verify_error,username=username, password=password, verify=verify)
         #validate user
@@ -119,21 +121,9 @@ def logout():
     del session['username']
     return redirect('blog')
 
-@app.route('/blog', methods=['POST', 'GET'])
-def display_blog():
-    if request.args:
-        blog_id = request.args.get('id')
-        blogs = Blog.query.filter_by(id=blog_id).all()
-        return render_template('single_post.html', blogs=blogs)
-    else:
-        blogs = Blog.query.all()
-        return render_template('blog.html', title="Build a Blog", blogs=blogs)
-
-
 @app.route('/newpost')
 def display():
     return render_template('new_post.html')
-
 
 @app.route('/newpost', methods=['post', 'get'])
 def create_new_post():
@@ -141,34 +131,54 @@ def create_new_post():
         return render_template('new_post.html', title="New Blog Post")
 
     if request.method == 'POST':
-        blog_title = request.form['title']
-        blog_owner = request.form['owner']
-        blog_body = request.form['body']
-
-        new_blog = Blog(blog_title, blog_owner, blog_body)
+        title = request.form['title']
+        body = request.form['body']
+        #EXISTING USER
+        owner = User.query.filter_by(username=session['username']).first()
 
         title_error = ''
-
         body_error = ''
 
-        if len(blog_title) == 0:
+        if len(title) == 0:
             title_error = "Your post must have a title. Make it snazzy. No click-bait!"
-        if len(blog_body) == 0:
+        if len(body) == 0:
             body_error = "Please fill in your post! We want to hear your ideas!"
 
-        if not title_error and not body_error:
+        # if not title_error and not body_error:
+        #     new_blog = Blog(title, owner, body)
+        #     db.session.add(new_blog)
+        #     db.session.commit()
+        #     return redirect('/blog?id={}'.format(new_blog.id))
+        # else:
+        #     blogs = Blog.query.all()
+        #     return render_template('new_post.html', blogs=blogs, title=title, title_error=title_error, body=body, body_error=body_error, owner=owner)
+        if title_error or body_error:
+                return render_template('new_post.html', title_error=title_error, body_error=body_error,title=title, body=body)
+        else:
+            new_blog = Blog(title, body, owner)
             db.session.add(new_blog)
             db.session.commit()
-            return redirect('/blog?id={}'.format(new_blog.id))
-        else:
-            blogs = Blog.query.all()
-            return render_template('new_post.html', title="Build a Blog", blogs=blogs, blog_title=blog_title, title_error=title_error, blog_body=blog_body, body_error=body_error, blog_owner=blog_owner)
+            return redirect('/single_post/' + str(new_blog.id))
+
+@app.route('/blog', methods=['POST', 'GET'])
+def index():
+    blogs = Blog.query.all()
+    return render_template('blog.html', blogs=blogs)
+
+# def display_blog():
+#     if request.args:
+#         blog_id = request.args.get('id')
+#         blogs = Blog.query.filter_by(id=blog_id).all()
+#         return render_template('single_post.html', blogs=blogs)
+#     else:
+#         blogs = Blog.query.all()
+#         return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
 
 @app.route('/', methods=['POST', 'GET'])
-def index():
-    blogs = Blog.query.all()
-    return render_template('blog.html', title="Build a Blog", blogs=blogs)
+def users():
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 if __name__ == "__main__":
     app.run()

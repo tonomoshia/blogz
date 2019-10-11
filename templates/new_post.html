@@ -6,12 +6,12 @@
     <form action="/newpost" method='POST'>
         <label for ='title'>
             <span class="form_label">Title for your new blog post:</span>
-            <input name="title" type="text" value="{{blog_title}}">
+            <input name="title" type="text" value="{{title}}">
         </label>
         <p class="error">{{title_error}} </p>
         <label for='body'>
             <span class="form_label">Your new post:</span>
-            <textarea name="body" type="textarea" rows="12" cols="100">{{new_blog_post}}</textarea>
+            <textarea name="body" type="textarea" rows="12" cols="50">{{new_blog_post}}</textarea>
         </label>
         <p class="error">{{body_error}}</p>
         <input class="submit" type="submit" value="Add Entry" />
