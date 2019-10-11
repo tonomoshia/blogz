@@ -59,12 +59,6 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    blogs = Blog.query.all()
-    return render_template('blog.html', title="Build a Blog", blogs=blogs)
-
-
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -79,7 +73,7 @@ def signup():
         existing_user_error = ''
 
         existing_user = User.query.filter_by(username=username).first()
-
+        #validate username
         if int(len(username)) <= 0:
             username_error = 'Thats not a valid username'
             username = ''
@@ -87,7 +81,7 @@ def signup():
             if int(len(username)) < 3 or int(len(username)) > 20:
                 username_error = 'Thats not a valid username'
                 username = ''
-
+        #validate password
         if int(len(password)) <= 0:
             password_error = 'Thats not a valid password'
             password = ''
@@ -95,7 +89,7 @@ def signup():
             if int(len(password)) < 3 or int(len(password)) > 20:
                 password_error = 'Thats not a valid password'
                 password = ''
-
+        #validate password verification
         if int(len(verify)) <= 0:
             verify_error = 'Password do not match'
             verify = ''
@@ -103,10 +97,10 @@ def signup():
             if password != verify:
                 verify_error = 'Password do not match'
                 verify = ''
-
+        #all errors passed
         if username_error or password_error or verify_error:
             return render_template('signup.html', username_error=username_error,password_error=password_error, verify_error=verify_error,username=username, password=password, verify=verify)
-
+        #validate user
         if not existing_user:
             new_user = User(username, password)
             db.session.add(new_user)
@@ -119,6 +113,7 @@ def signup():
 
     return render_template('signup.html')
 
+#logout returns you to homepage
 @app.route('/logout')
 def logout():
     del session['username']
@@ -139,9 +134,10 @@ def display_blog():
 def display():
     return render_template('new_post.html')
 
+
 @app.route('/newpost', methods=['post', 'get'])
 def create_new_post():
-    if request.method=='GET':
+    if request.method == 'GET':
         return render_template('new_post.html', title="New Blog Post")
 
     if request.method == 'POST':
@@ -155,10 +151,10 @@ def create_new_post():
 
         body_error = ''
 
-        if len(blog_title)==0:
-            title_error = "Please provide a title for your new blog post."
-        if len(blog_body)==0:
-            body_error = "Please enter text in your new blog post."
+        if len(blog_title) == 0:
+            title_error = "Your post must have a title. Make it snazzy. No click-bait!"
+        if len(blog_body) == 0:
+            body_error = "Please fill in your post! We want to hear your ideas!"
 
         if not title_error and not body_error:
             db.session.add(new_blog)
@@ -167,6 +163,12 @@ def create_new_post():
         else:
             blogs = Blog.query.all()
             return render_template('new_post.html', title="Build a Blog", blogs=blogs, blog_title=blog_title, title_error=title_error, blog_body=blog_body, body_error=body_error, blog_owner=blog_owner)
+
+
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    blogs = Blog.query.all()
+    return render_template('blog.html', title="Build a Blog", blogs=blogs)
 
 if __name__ == "__main__":
     app.run()
