@@ -3,6 +3,10 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+  background: linear-gradient(black, white);
+}
+
 .error {
   color: red;
 }
