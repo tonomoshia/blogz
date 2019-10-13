@@ -81,23 +81,23 @@ def signup():
             username = ''
         else:
             if int(len(username)) < 3 or int(len(username)) > 20:
-                username_error = 'Thats not a valid username'
+                username_error = 'That is not a valid username'
                 username = ''
         #validate password
         if int(len(password)) <= 0:
-            password_error = 'Thats not a valid password'
+            password_error = 'That is not a valid password'
             password = ''
         else:
             if int(len(password)) < 3 or int(len(password)) > 20:
-                password_error = 'Thats not a valid password'
+                password_error = 'That is not a valid password'
                 password = ''
         #validate password verification
         if int(len(verify)) <= 0:
-            verify_error = 'Password do not match'
+            verify_error = 'Passwords do not match'
             verify = ''
         else:
             if password != verify:
-                verify_error = 'Password do not match'
+                verify_error = 'Passwords do not match'
                 verify = ''
 
         if username_error or password_error or verify_error:
