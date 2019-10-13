@@ -47,17 +47,16 @@ def login():
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
 
-        if user and password == password:
+        if user and user.password == password:
             session['username'] = username
             flash('Logged in')
             return redirect('newpost')
         else:
             if not user:
                 flash('Username does not exist', 'error')
-                return redirect('login')
             elif password != user.password:
                 flash('Password is incorrect.', 'error')
-                return redirect('login')
+            return redirect('login')
 
     return render_template('login.html')
 
