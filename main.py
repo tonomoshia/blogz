@@ -1,11 +1,13 @@
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import Flask, request, redirect, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
+
 db = SQLAlchemy(app)
+
 app.secret_key = "jIxfJ7UoLjcGYyCO8mooT&!r"
 
 class Blog(db.Model):
@@ -35,7 +37,7 @@ class User(db.Model):
 @app.before_request
 def require_login():
     #not required to login
-    allowed_routes = ['login', 'blog', 'index', 'signup',]
+    allowed_routes = ['login', 'blog', 'index', 'signup', 'users', 'userpost',]
     #required to login
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('login')
@@ -49,14 +51,11 @@ def login():
 
         if user and user.password == password:
             session['username'] = username
-            flash('Logged in')
             return redirect('newpost')
-        else:
-            if not user:
-                flash('Username does not exist', 'error')
-            elif password != user.password:
-                flash('Password is incorrect.', 'error')
+        if not user:
             return redirect('login')
+        else:
+            return redirect('login', username=username)
 
     return render_template('login.html')
 
@@ -76,7 +75,7 @@ def signup():
         existing_user = User.query.filter_by(username=username).first()
         #validate username
         if int(len(username)) <= 0:
-            username_error = 'Thats not a valid username'
+            username_error = 'That is not a valid username'
             username = ''
         else:
             if int(len(username)) < 3 or int(len(username)) > 20:
@@ -109,7 +108,6 @@ def signup():
             session['username'] = username
             return redirect('newpost')
         else:
-            flash('A user with that username already exists', 'error')
             return redirect('signup')
 
     return render_template('signup.html')
@@ -126,8 +124,6 @@ def display():
 
 @app.route('/newpost', methods=['post', 'get'])
 def create_newpost():
-    # if request.method == 'GET':
-    #     return render_template('newpost.html', title="New Blog Post")
 
     if request.method == 'POST':
         title = request.form['title']
@@ -138,9 +134,9 @@ def create_newpost():
         title_error = ''
         body_error = ''
 
-        if len(title) == 0:
+        if len(title) <= 0:
             title_error = "Your post must have a title. Make it snazzy. No click-bait!"
-        if len(body) == 0:
+        if len(body) <= 0:
             body_error = "Please fill in your post! We want to hear your ideas!"
 
         if title_error or body_error:
