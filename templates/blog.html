@@ -7,7 +7,7 @@
     {% else %}
         {% for blog in blogs %}
             <a href="/blogpost/{{ blog.id }}">{{ blog.title }}</a>
-            <p>{{blog.body}}</p>
+            <p class="text-secondary>{{blog.body}}</p>
             <p>Written by: <a href="/userpost/{{blog.owner.id}}">{{blog.owner.username }}</a></p>
             <hr />
         {% endfor %}
